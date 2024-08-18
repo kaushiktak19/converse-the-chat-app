@@ -1,16 +1,25 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import AuthToggle from './components/AuthToggle';
+import ChatPage from './components/ChatPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
-// import Login from './components/Login';
-import AuthToggle from './components/AuthTOggle';
-// import Signup from './components/Signup';
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <div className="min-h-screen bg-gray-100 p-4">
-        <AuthToggle />
-      </div>
-    </AuthProvider>
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<AuthToggle />} />
+          <Route path="/chat" element={
+            <ProtectedRoute>
+              <ChatPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/" element={<AuthToggle />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
   );
 };
 
