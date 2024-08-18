@@ -10,15 +10,15 @@ export const signup = async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
 
   try {
+    // Validate required fields
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
     // Check if the username already exists
     const existingUser = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
     if (existingUser.rows.length > 0) {
       return res.status(400).json({ error: 'Username already exists' });
-    }
-
-    // Validate required fields
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
     }
 
     // Hash password and insert new user
@@ -39,16 +39,25 @@ export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
   try {
-    const result = await pool.query('SELECT id, password FROM users WHERE username = $1', [username]);
-    if (result.rows.length > 0) {
-      const user = result.rows[0];
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (isMatch) {
-        const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
-      } else {
-        res.status(401).json({ error: 'Invalid credentials' });
-      }
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    const result = await pool.query('SELECT id, username, password FROM users WHERE username = $1', [username]);
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const user = result.rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (isMatch) {
+      const token = jwt.sign(
+        { id: user.id, username: user.username }, // Ensure username is included
+        JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+      res.json({ token });
     } else {
       res.status(401).json({ error: 'Invalid credentials' });
     }

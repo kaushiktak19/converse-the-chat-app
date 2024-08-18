@@ -9,6 +9,9 @@
     "outDir": "./dist",
     "baseUrl": "./src"
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "src/types/**/*" 
+  ],
   "exclude": ["node_modules"]
 }

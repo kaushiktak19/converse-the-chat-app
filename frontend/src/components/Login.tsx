@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { toast } from 'react-toastify';
+//import { toast } from 'react-toastify';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -11,12 +11,12 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       await login(username, password);
-      toast.success('Login successful!');
+      //toast.success('Login successful!');
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(`Login failed: ${error.message}`);
+        //toast.error(`Login failed: ${error.message}`);
       } else {
-        toast.error('Login failed. Please try again.');
+       // toast.error('Login failed. Please try again.');
       }
     }
   };
